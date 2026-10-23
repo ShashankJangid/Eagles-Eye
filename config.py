@@ -1,0 +1,39 @@
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
+REPORTS_DIR = BASE_DIR / "reports"
+DB_PATH = DATA_DIR / "eagles_eye.db"
+
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+
+CAMERA_INDEX = 0
+FRAME_WIDTH = 640
+FRAME_HEIGHT = 480
+FPS = 30
+
+EAR_SLEEP_THRESHOLD = 0.20
+EAR_CONSEC_FRAMES = 25
+
+MAR_TALK_THRESHOLD = 0.55
+MAR_CONSEC_FRAMES = 20
+
+HEAD_POSE_YAW_LIMIT = 28.0
+HEAD_POSE_PITCH_UP_LIMIT = 22.0
+HEAD_POSE_PITCH_DOWN_LIMIT = -25.0
+
+WEIGHT_CV_EXPRESSION = 0.35
+WEIGHT_DG_GAZE = 0.40
+WEIGHT_HEAD_POSE = 0.25
+
+STUDY_FOCUS_THRESHOLD = 60.0
+DISTRACTION_SCORE_THRESHOLD = 40.0
+
+WEEKLY_INDISCIPLINE_ESCALATION_THRESHOLD = 5
+WEEKLY_AVERAGE_FOCUS_CRITICAL = 50.0
+
+LMS_ENDPOINT_URL = "https://lms.institution.edu/api/v1/attendance-engagement"
+LMS_PROVIDER = "Canvas"
+DEFAULT_CLASS_NAME = "Grade 10 - Science & Mathematics"
