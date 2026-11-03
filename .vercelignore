@@ -1,0 +1,12 @@
+requirements.txt
+packages.txt
+data/
+reports/
+core/
+services/
+ui/
+tests/
+conftest.py
+run.py
+config.py
+database/
