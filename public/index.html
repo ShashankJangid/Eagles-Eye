@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eagle's Eye - AI Classroom Attention System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .radar-box {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            width: 90px;
+            height: 90px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid #475569;
+            border-radius: 8px;
+        }
+        .gauge-bar {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 150px;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <aside class="w-full md:w-80 bg-slate-950 p-6 border-r border-slate-800 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-3xl">🦅</span>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight text-white">Eagle's Eye AI</h1>
+                        <p class="text-xs text-blue-400 font-medium">Classroom Attention & Proctoring</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 mb-6">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Monitored Student</label>
+                    <select id="studentSelect" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="STU-101">STU-101 - Aarav Sharma</option>
+                        <option value="STU-102">STU-102 - Priya Patel</option>
+                        <option value="STU-103" selected>STU-103 - Rohan Gupta</option>
+                        <option value="STU-104">STU-104 - Ananya Verma</option>
+                        <option value="STU-105">STU-105 - Vikram Malhotra</option>
+                    </select>
+
+                    <div id="studentProfile" class="mt-4 pt-4 border-t border-slate-800 text-xs space-y-2">
+                        <div class="flex justify-between"><span class="text-slate-400">Class:</span> <span class="font-medium text-slate-200" id="profGrade">Grade 10-A</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">Parent:</span> <span class="font-medium text-slate-200" id="profParent">Rajesh Gupta</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">Email:</span> <span class="font-medium text-slate-200" id="profEmail">r.gupta@parent.org</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">System Config</div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">Course:</span>
+                        <span class="text-blue-400 font-semibold">Grade 10 - Science & Maths</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">LMS Provider:</span>
+                        <span class="bg-blue-950 text-blue-300 px-2 py-0.5 rounded font-mono text-[11px]">Canvas LTI</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">Precision:</span>
+                        <span class="text-emerald-400 font-semibold">478 Mesh + 3D DG</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-slate-800/80 text-xs text-slate-500 text-center">
+                Eagle's Eye v2.5 &bull; High-Precision Production
+            </div>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-8 overflow-y-auto">
+            <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-blue-950/40 p-6 rounded-2xl border border-blue-900/30 mb-8 shadow-xl">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <span>🦅</span> Eagle's Eye: High-Precision Classroom Attention System
+                        </h2>
+                        <p class="text-slate-400 text-sm mt-1">
+                            Real-time 478-Landmark CV Facial Expression Analysis fused with 3D Directed Gaze (DG) Telemetry.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Engine Ready
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-b border-slate-800 mb-6">
+                <nav class="flex space-x-6">
+                    <button onclick="switchTab('tab-camera')" id="nav-camera" class="pb-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 flex items-center gap-2">
+                        <i class="fa-solid fa-video"></i> Live AI Camera & DG Fusion
+                    </button>
+                    <button onclick="switchTab('tab-lms')" id="nav-lms" class="pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-graduation-cap"></i> Daily Teacher LMS Portal
+                    </button>
+                    <button onclick="switchTab('tab-escalate')" id="nav-escalate" class="pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Weekly Parent Escalation Center
+                    </button>
+                    <button onclick="switchTab('tab-dossier')" id="nav-dossier" class="pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line"></i> Historical Dossiers
+                    </button>
+                </nav>
+            </div>
+
+            <section id="tab-camera" class="space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="relative bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden aspect-video flex items-center justify-center shadow-2xl">
+                            <canvas id="viewCanvas" width="640" height="480" class="w-full h-full object-cover"></canvas>
+                            <video id="webcamVideo" autoplay playsinline muted class="hidden"></video>
+
+                            <div id="idleOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+                                <i class="fa-solid fa-camera text-4xl text-slate-600 mb-3"></i>
+                                <p class="text-sm text-slate-400 font-medium">Camera stream idle.</p>
+                                <button onclick="toggleStream()" class="mt-4 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm shadow-lg transition">
+                                    ▶️ Start Proctoring
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="alertBox" class="hidden p-4 rounded-xl border border-red-500/40 bg-red-950/30 text-red-300 text-sm flex items-center gap-3">
+                            <i class="fa-solid fa-circle-exclamation text-red-400 text-lg"></i>
+                            <div>
+                                <span class="font-bold" id="alertTitle">INDISCIPLINE DETECTED:</span>
+                                <span id="alertDesc">High severity disruption recorded.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Stream Controls</h3>
+
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1.5 font-medium">Hardware Source</label>
+                                <select id="camSourceSelect" onchange="onSourceChange()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white outline-none">
+                                    <option value="sim">Simulated Classroom Camera (Deterministic)</option>
+                                    <option value="webcam">Physical Webcam (Browser Device)</option>
+                                </select>
+                            </div>
+
+                            <div id="scenarioControl">
+                                <label class="block text-xs text-slate-400 mb-1.5 font-medium">Simulation Scenario</label>
+                                <select id="scenarioSelect" onchange="onScenarioChange()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white outline-none">
+                                    <option value="auto">Auto-Demonstration (Cycles All 7 Behaviors)</option>
+                                    <option value="focused">1. Focused Studying & Active Reading</option>
+                                    <option value="thinking">2. Deep Thinking & Problem Solving</option>
+                                    <option value="talking">3. Talking & Chatting with Neighbor</option>
+                                    <option value="swinging">4. Restless Swinging & Body Rocking</option>
+                                    <option value="drowsy">5. Drowsy & Sleeping on Desk</option>
+                                    <option value="phone">6. Concealed Phone in Lap</option>
+                                    <option value="absent">7. Student Absent / Left Seat</option>
+                                </select>
+                            </div>
+
+                            <div class="pt-2 flex gap-3">
+                                <button id="btnToggle" onclick="toggleStream()" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm shadow transition">
+                                    ▶️ Start Proctoring
+                                </button>
+                                <button id="btnStop" onclick="stopStream()" disabled class="flex-1 py-2.5 bg-slate-800 text-slate-500 rounded-xl font-bold text-sm transition">
+                                    ⏹️ Stop Stream
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Precision Telemetry</h3>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-center">
+                                    <div class="text-[11px] text-slate-400 font-medium">Focus Score (EMA)</div>
+                                    <div id="statFocus" class="text-2xl font-black text-emerald-400 mt-0.5">85.0%</div>
+                                </div>
+                                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-center">
+                                    <div class="text-[11px] text-slate-400 font-medium">Current Affect</div>
+                                    <div id="statAffect" class="text-xs font-bold text-emerald-400 mt-2 truncate">FOCUSED</div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400">👁️ Eye Openness (EAR):</span>
+                                    <span id="statEAR" class="font-mono font-semibold text-slate-200">0.28 (Open)</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400">🗣️ Mouth Activity (MAR):</span>
+                                    <span id="statMAR" class="font-mono font-semibold text-slate-200">0.05 (Silent)</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400">🧭 Head Pose Euler:</span>
+                                    <span id="statPose" class="font-mono font-semibold text-cyan-300">Y:+0.0° | P:+0.0°</span>
+                                </div>
+                                <div class="flex justify-between py-1.5">
+                                    <span class="text-slate-400">🎯 DG Gaze Viewport:</span>
+                                    <span id="statDG" class="font-mono font-semibold text-emerald-400">TARGET LOCKED (92%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reportSection" class="hidden p-6 bg-slate-950 rounded-2xl border border-blue-900/40 space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-file-circle-check text-blue-400"></i> Proctoring Session Report Generated
+                            </h4>
+                            <p class="text-xs text-slate-400 mt-0.5">Automated Event Evaluation compiled upon stopping stream.</p>
+                        </div>
+                        <button onclick="downloadReport()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow">
+                            <i class="fa-solid fa-download"></i> Download Report (PDF / Print)
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div class="text-xs text-slate-400">Duration</div>
+                            <div id="repDuration" class="text-lg font-bold text-white mt-1">00m 45s</div>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div class="text-xs text-slate-400">Average Focus</div>
+                            <div id="repFocus" class="text-lg font-bold text-emerald-400 mt-1">84.2%</div>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div class="text-xs text-slate-400">Indiscipline Flags</div>
+                            <div id="repFlags" class="text-lg font-bold text-amber-400 mt-1">1 Incident</div>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div class="text-xs text-slate-400">Evaluation</div>
+                            <div id="repEval" class="text-lg font-bold text-blue-400 mt-1">Satisfactory</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-lms" class="hidden space-y-6">
+                <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Daily LMS Attention Sync (Canvas / Moodle)</h3>
+                            <p class="text-xs text-slate-400 mt-1">Aggregated daily engagement indicators pushed to teacher gradebook.</p>
+                        </div>
+                        <button onclick="triggerLMSSync()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow">
+                            <i class="fa-solid fa-arrows-rotate"></i> Sync & Push Daily Reports to LMS Now
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-900 text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">ID</th>
+                                    <th class="p-3">Student Name</th>
+                                    <th class="p-3">Class</th>
+                                    <th class="p-3">Study Time</th>
+                                    <th class="p-3">Distracted</th>
+                                    <th class="p-3">Focus %</th>
+                                    <th class="p-3">Indiscipline Flags</th>
+                                    <th class="p-3">LMS Sync</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800" id="lmsTableBody">
+                                <tr class="hover:bg-slate-900/50">
+                                    <td class="p-3 font-mono">STU-101</td>
+                                    <td class="p-3 font-semibold text-white">Aarav Sharma</td>
+                                    <td class="p-3">Grade 10-A</td>
+                                    <td class="p-3">55m</td>
+                                    <td class="p-3">5m</td>
+                                    <td class="p-3 font-bold text-emerald-400">91.6%</td>
+                                    <td class="p-3 text-slate-400">0</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-semibold text-[11px]">SYNCED</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/50">
+                                    <td class="p-3 font-mono">STU-102</td>
+                                    <td class="p-3 font-semibold text-white">Priya Patel</td>
+                                    <td class="p-3">Grade 10-A</td>
+                                    <td class="p-3">48m</td>
+                                    <td class="p-3">12m</td>
+                                    <td class="p-3 font-bold text-emerald-400">80.0%</td>
+                                    <td class="p-3 text-slate-400">1</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-semibold text-[11px]">SYNCED</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/50">
+                                    <td class="p-3 font-mono">STU-103</td>
+                                    <td class="p-3 font-semibold text-white">Rohan Gupta</td>
+                                    <td class="p-3">Grade 10-A</td>
+                                    <td class="p-3">22m</td>
+                                    <td class="p-3">38m</td>
+                                    <td class="p-3 font-bold text-red-400">36.7%</td>
+                                    <td class="p-3 font-bold text-red-400">7</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-semibold text-[11px]">ESCALATED</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-escalate" class="hidden space-y-6">
+                <div class="bg-red-950/20 border border-red-500/30 p-5 rounded-2xl flex items-start gap-3">
+                    <i class="fa-solid fa-triangle-exclamation text-red-400 text-xl mt-0.5"></i>
+                    <div>
+                        <h4 class="font-bold text-red-300 text-sm">Parent Escalation Triggered</h4>
+                        <p class="text-xs text-red-200/80 mt-1">1 student exceeded the weekly threshold (&ge; 5 infractions or &lt; 50% focus) and requires parent notification.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Incident Dossier: Rohan Gupta</h3>
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                                <div class="flex justify-between font-bold text-white"><span>TALKING WITH NEIGHBOR</span> <span class="text-red-400">HIGH</span></div>
+                                <div class="text-slate-400 mt-1">Prolonged verbal interaction during independent study period.</div>
+                            </div>
+                            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                                <div class="flex justify-between font-bold text-white"><span>CONCEALED PHONE</span> <span class="text-red-400">HIGH</span></div>
+                                <div class="text-slate-400 mt-1">Gaze directed downward into lap toward unauthorized mobile device.</div>
+                            </div>
+                            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                                <div class="flex justify-between font-bold text-white"><span>DROWSY / SLEEPING</span> <span class="text-amber-400">MEDIUM</span></div>
+                                <div class="text-slate-400 mt-1">Persistent eye closure & head drooping for > 2 minutes.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Parent Notification Letter</h3>
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 text-xs font-mono text-slate-300 space-y-2 leading-relaxed">
+                            <div class="text-slate-500">To: r.gupta@parent.org</div>
+                            <div class="text-slate-500">Subject: [IMPORTANT] Academic Engagement & Behavior Notice: Rohan Gupta</div>
+                            <div class="pt-2 border-t border-slate-800 text-slate-300">
+                                Dear Mr. Rajesh Gupta,<br/><br/>
+                                Our classroom learning analytics system ('Eagle's Eye' AI) recorded behavioral patterns requiring mutual home-school intervention:<br/>
+                                &bull; Weekly Average Focus: 36.7% (Benchmark &ge; 75%)<br/>
+                                &bull; Recorded Indiscipline Flags: 7 incidents<br/><br/>
+                                Please review the attached behavioral dossier.
+                            </div>
+                        </div>
+                        <button onclick="alert('Notification sent to parent via Email & SMS.')" class="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs shadow transition">
+                            ✉️ Dispatch Escalation Notice to Parent via Email & SMS
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-dossier" class="hidden space-y-6">
+                <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">7-Day Focus Score Trend (%)</h3>
+                    <div class="h-64">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const students = {
+            "STU-101": { name: "Aarav Sharma", grade: "Grade 10-A", parent: "Sunil Sharma", email: "s.sharma@parent.org" },
+            "STU-102": { name: "Priya Patel", grade: "Grade 10-A", parent: "Meera Patel", email: "m.patel@parent.org" },
+            "STU-103": { name: "Rohan Gupta", grade: "Grade 10-A", parent: "Rajesh Gupta", email: "r.gupta@parent.org" },
+            "STU-104": { name: "Ananya Verma", grade: "Grade 10-A", parent: "Kavita Verma", email: "k.verma@parent.org" },
+            "STU-105": { name: "Vikram Malhotra", grade: "Grade 10-A", parent: "Ravi Malhotra", email: "r.malhotra@parent.org" }
+        };
+
+        let isStreaming = false;
+        let animationFrame = null;
+        let sessionSeconds = 0;
+        let sessionTimer = null;
+        let currentScenario = "auto";
+        let autoScenarioIndex = 0;
+        let scenarioFrameCount = 0;
+
+        const canvas = document.getElementById("viewCanvas");
+        const ctx = canvas.getContext("2d");
+        const webcam = document.getElementById("webcamVideo");
+
+        const scenarioList = ["focused", "thinking", "talking", "swinging", "drowsy", "phone", "absent"];
+
+        function switchTab(tabId) {
+            ["tab-camera", "tab-lms", "tab-escalate", "tab-dossier"].forEach(id => {
+                document.getElementById(id).classList.add("hidden");
+            });
+            document.getElementById(tabId).classList.remove("hidden");
+
+            ["nav-camera", "nav-lms", "nav-escalate", "nav-dossier"].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove("border-blue-500", "text-blue-400");
+                el.classList.add("border-transparent", "text-slate-400");
+            });
+
+            const activeNav = document.getElementById("nav-" + tabId.replace("tab-", ""));
+            activeNav.classList.remove("border-transparent", "text-slate-400");
+            activeNav.classList.add("border-blue-500", "text-blue-400");
+
+            if (tabId === "tab-dossier") renderTrendChart();
+        }
+
+        document.getElementById("studentSelect").addEventListener("change", (e) => {
+            const stu = students[e.target.value];
+            document.getElementById("profGrade").textContent = stu.grade;
+            document.getElementById("profParent").textContent = stu.parent;
+            document.getElementById("profEmail").textContent = stu.email;
+        });
+
+        function onScenarioChange() {
+            currentScenario = document.getElementById("scenarioSelect").value;
+        }
+
+        function onSourceChange() {
+            const src = document.getElementById("camSourceSelect").value;
+            document.getElementById("scenarioControl").style.display = src === "sim" ? "block" : "none";
+        }
+
+        async function toggleStream() {
+            if (isStreaming) return;
+            const src = document.getElementById("camSourceSelect").value;
+
+            if (src === "webcam") {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+                    webcam.srcObject = stream;
+                    await webcam.play();
+                } catch (e) {
+                    alert("Webcam access error: " + e.message + ". Switching to simulated camera.");
+                    document.getElementById("camSourceSelect").value = "sim";
+                    onSourceChange();
+                }
+            }
+
+            isStreaming = true;
+            document.getElementById("idleOverlay").classList.add("hidden");
+            document.getElementById("btnToggle").disabled = true;
+            document.getElementById("btnToggle").classList.replace("bg-blue-600", "bg-slate-800");
+            document.getElementById("btnStop").disabled = false;
+            document.getElementById("btnStop").classList.replace("bg-slate-800", "bg-red-600");
+            document.getElementById("btnStop").classList.replace("text-slate-500", "text-white");
+
+            sessionSeconds = 0;
+            sessionTimer = setInterval(() => { sessionSeconds++; }, 1000);
+            renderLoop();
+        }
+
+        function stopStream() {
+            if (!isStreaming) return;
+            isStreaming = false;
+            cancelAnimationFrame(animationFrame);
+            clearInterval(sessionTimer);
+
+            if (webcam.srcObject) {
+                webcam.srcObject.getTracks().forEach(t => t.stop());
+                webcam.srcObject = null;
+            }
+
+            document.getElementById("idleOverlay").classList.remove("hidden");
+            document.getElementById("btnToggle").disabled = false;
+            document.getElementById("btnToggle").classList.replace("bg-slate-800", "bg-blue-600");
+            document.getElementById("btnStop").disabled = true;
+            document.getElementById("btnStop").classList.replace("bg-red-600", "bg-slate-800");
+            document.getElementById("btnStop").classList.replace("text-white", "text-slate-500");
+
+            const mins = Math.floor(sessionSeconds / 60);
+            const secs = sessionSeconds % 60;
+            document.getElementById("repDuration").textContent = `${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+            document.getElementById("reportSection").classList.remove("hidden");
+        }
+
+        function renderLoop() {
+            if (!isStreaming) return;
+
+            const src = document.getElementById("camSourceSelect").value;
+            let activeScen = currentScenario;
+
+            if (activeScen === "auto") {
+                scenarioFrameCount++;
+                if (scenarioFrameCount > 90) {
+                    scenarioFrameCount = 0;
+                    autoScenarioIndex = (autoScenarioIndex + 1) % scenarioList.length;
+                }
+                activeScen = scenarioList[autoScenarioIndex];
+            }
+
+            let ear = 0.28, mar = 0.05, yaw = 0.0, pitch = 0.0, focus = 85.0;
+            let affect = "FOCUSED_ATTENTIVE";
+            let color = [0, 220, 100];
+            let indiscipline = false;
+
+            if (activeScen === "focused") {
+                ear = 0.28; mar = 0.04; yaw = 2.0; pitch = -3.0; focus = 92.0;
+                affect = "FOCUSED_READING";
+            } else if (activeScen === "thinking") {
+                ear = 0.24; mar = 0.06; yaw = -6.0; pitch = 8.0; focus = 82.0;
+                affect = "CONFUSED_CONTEMPLATING";
+                color = [255, 180, 0];
+            } else if (activeScen === "talking") {
+                ear = 0.26; mar = 0.55; yaw = 26.0; pitch = 2.0; focus = 22.0;
+                affect = "TALKING_INDISCIPLINE";
+                color = [220, 38, 38];
+                indiscipline = true;
+            } else if (activeScen === "swinging") {
+                ear = 0.25; mar = 0.08; yaw = Math.sin(Date.now() / 400) * 32.0; pitch = 0.0; focus = 38.0;
+                affect = "DISTRACTED_LOOKING_AWAY";
+                color = [249, 115, 22];
+            } else if (activeScen === "drowsy") {
+                ear = 0.12; mar = 0.02; yaw = 0.0; pitch = -15.0; focus = 18.0;
+                affect = "DROWSY_SLEEPING";
+                color = [168, 85, 247];
+                indiscipline = true;
+            } else if (activeScen === "phone") {
+                ear = 0.25; mar = 0.04; yaw = 0.0; pitch = -28.0; focus = 26.0;
+                affect = "PHONE_DISTRACTION";
+                color = [220, 38, 38];
+                indiscipline = true;
+            } else if (activeScen === "absent") {
+                ear = 0.0; mar = 0.0; yaw = 0.0; pitch = 0.0; focus = 0.0;
+                affect = "INDISCIPLINE_ABSENT";
+                color = [220, 38, 38];
+                indiscipline = true;
+            }
+
+            // Draw Background
+            if (src === "webcam" && webcam.videoWidth) {
+                ctx.drawImage(webcam, 0, 0, 640, 480);
+            } else {
+                ctx.fillStyle = "#090d16";
+                ctx.fillRect(0, 0, 640, 480);
+
+                if (activeScen !== "absent") {
+                    ctx.fillStyle = "#1e293b";
+                    ctx.beginPath();
+                    ctx.arc(320, 240, 75, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Eyes
+                    ctx.fillStyle = ear > 0.16 ? "#38bdf8" : "#475569";
+                    ctx.beginPath();
+                    ctx.arc(295, 225, ear > 0.16 ? 6 : 2, 0, Math.PI * 2);
+                    ctx.arc(345, 225, ear > 0.16 ? 6 : 2, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Mouth
+                    ctx.fillStyle = "#f43f5e";
+                    ctx.beginPath();
+                    ctx.ellipse(320, 280, 16, mar * 25, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Bounding Box
+                    ctx.strokeStyle = `rgb(${color.join(',')})`;
+                    ctx.lineWidth = 2.5;
+                    ctx.strokeRect(240, 150, 160, 190);
+                } else {
+                    ctx.fillStyle = "#64748b";
+                    ctx.font = "bold 16px sans-serif";
+                    ctx.fillText("[ Student Not in Seat ]", 230, 240);
+                }
+            }
+
+            // HUD Header
+            ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+            ctx.fillRect(0, 0, 640, 44);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 13px sans-serif";
+            ctx.fillText("EAGLE'S EYE: AI Camera + DG Attention Monitor", 12, 26);
+
+            // Badge
+            ctx.fillStyle = `rgb(${color.join(',')})`;
+            ctx.fillRect(450, 8, 175, 28);
+            ctx.fillStyle = "#000000";
+            ctx.font = "bold 11px sans-serif";
+            ctx.fillText(affect.substring(0, 20), 458, 26);
+
+            // DG Radar
+            ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+            ctx.fillRect(12, 380, 85, 85);
+            ctx.strokeStyle = "#475569";
+            ctx.strokeRect(12, 380, 85, 85);
+            ctx.fillStyle = "rgba(16, 185, 129, 0.2)";
+            ctx.fillRect(30, 395, 50, 55);
+            ctx.fillStyle = activeScen === "focused" ? "#10b981" : "#ef4444";
+            ctx.beginPath();
+            ctx.arc(activeScen === "focused" ? 54 : 25, activeScen === "focused" ? 420 : 440, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Focus Bar
+            ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+            ctx.fillRect(475, 435, 150, 32);
+            ctx.fillStyle = `rgb(${color.join(',')})`;
+            ctx.fillRect(485, 447, (focus / 100) * 130, 12);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "10px sans-serif";
+            ctx.fillText(`Focus Index: ${focus.toFixed(0)}%`, 485, 442);
+
+            // Telemetry DOM updates
+            document.getElementById("statFocus").textContent = `${focus.toFixed(1)}%`;
+            document.getElementById("statAffect").textContent = affect;
+            document.getElementById("statEAR").textContent = `${ear.toFixed(2)} (${ear > 0.16 ? 'Open' : 'Closed'})`;
+            document.getElementById("statMAR").textContent = `${mar.toFixed(2)} (${mar > 0.4 ? 'Talking' : 'Silent'})`;
+            document.getElementById("statPose").textContent = `Y:${yaw >= 0 ? '+' : ''}${yaw.toFixed(1)}° | P:${pitch >= 0 ? '+' : ''}${pitch.toFixed(1)}°`;
+
+            const alertBox = document.getElementById("alertBox");
+            if (indiscipline) {
+                alertBox.classList.remove("hidden");
+                document.getElementById("alertTitle").textContent = `INDISCIPLINE: ${affect}`;
+                document.getElementById("alertDesc").textContent = "High severity behavioral disruption registered.";
+            } else {
+                alertBox.classList.add("hidden");
+            }
+
+            animationFrame = requestAnimationFrame(renderLoop);
+        }
+
+        function triggerLMSSync() {
+            alert("LMS Sync Successful: 3 records pushed to Canvas LTI Endpoint (HTTP 200 OK).");
+        }
+
+        function downloadReport() {
+            window.print();
+        }
+
+        function renderTrendChart() {
+            const ctxChart = document.getElementById("trendChart").getContext("2d");
+            if (window.myTrendChart) window.myTrendChart.destroy();
+            window.myTrendChart = new Chart(ctxChart, {
+                type: 'line',
+                data: {
+                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+                    datasets: [{
+                        label: 'Focus Score %',
+                        data: [88, 76, 82, 45, 60, 35, 37],
+                        borderColor: '#38bdf8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { min: 0, max: 100, grid: { color: '#1e293b' } },
+                        x: { grid: { color: '#1e293b' } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
