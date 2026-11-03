@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import date
 from services.lms_service import LMSService
 from services.escalation_service import EscalationService
 from services.pdf_generator import PDFReportGenerator
@@ -15,6 +16,18 @@ def test_lms_daily_aggregation_and_pdf():
 
 def test_weekly_escalation_and_parent_pdf():
     db = DBManager()
+    today = date.today().isoformat()
+    db.upsert_daily_report(
+        student_id="STU-103",
+        report_date=today,
+        total_monitored_minutes=60.0,
+        study_minutes=20.0,
+        distracted_minutes=40.0,
+        focus_percentage=33.3,
+        indiscipline_count=6,
+        lms_sync_status="SYNCED",
+        lms_payload={}
+    )
     esc = EscalationService(db=db)
     results = esc.evaluate_weekly_reports()
 
